@@ -9,4 +9,4 @@
   - The only nuance the assembler contains is the usage of labels for the jump instructions instead of using the memory locations directly.
   
 **Example**
-  ![alt text](https://github.com/dma-neves/Assembler/files/codeExample.png)
+  ![alt text](https://github.com/dma-neves/Assembler/blob/main/files/codeExample.png)
