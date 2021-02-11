@@ -31,7 +31,7 @@ else:
 
         lc += 1
         words = line.split()
-        if len(words) != 0 and words[0][0] != '#':
+        if len(words) != 0 and words[0][0] != '#' and words[0][0] != ';':
 
             data = ""
             inst = ""
@@ -238,6 +238,10 @@ else:
             if words[0][-1] != ':':
                 instructions.append(data + inst)
                 ic += 2
+
+            if ic >= 256:
+                print("error: program to big (maximum of 128 instructions)")
+                quit()
 
     f.close()
 
