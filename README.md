@@ -9,4 +9,4 @@
   - The only nuances the assembler contains are the usage of labels for the jump instructions instead of using the memory locations directly and the addition of comments using the "#" character.
   
 **Example**
-  ![alt text](https://github.com/dma-neves/Assembler/blob/main/files/codeExample.png)
+  ![alt text](https://github.com/dma-neves/Assembler/blob/main/other/codeExample.png)
