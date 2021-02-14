@@ -79,7 +79,7 @@ else:
                     printError(lc)
             else:
                 ic += 2
-                instStr = ""
+                instExp = "" # Instruction expression
                 data = 0
                 
                 for t in tokens:
@@ -90,21 +90,21 @@ else:
                     if token_wd.isnumeric():
                         data = int(token_wd)
                         if '$' in t:
-                            instStr += '$X'
+                            instExp += '$X'
                         else:
-                            instStr += 'adr'
+                            instExp += 'adr'
                     # If token is a label, attribute the correct memory address to the instruction data
                     elif t in labels:
                         data = labels[t]
-                        instStr += 'adr'
+                        instExp += 'adr'
                     else:
-                        instStr += t
+                        instExp += t
 
                 # Check for invalid instruction
-                if not (instStr in instValue):
+                if not (instExp in instValue):
                     printError(lc)
 
-                inst = instValue[instStr]
+                inst = instValue[instExp]
                 b = intTo8bitStr(data) + intTo8bitStr(inst)
                 # Add instruction to the list
                 instructions.append(b)
