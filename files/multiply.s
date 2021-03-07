@@ -1,40 +1,46 @@
 # a*b program
 
 # a
-lod $23 RA
-str RA 0
+lod $0 ADR
+str $23 [ADR]
 
 # b
-lod $5 RA
-str RA 1
+lod $1 ADR
+str $5 [ADR]
 
 # i
-lod $0 RA
-str RA 2
+lod $2 ADR
+str $0 [ADR]
 
 # r (result)
-lod $0 RA
-str RA 3
+lod $3 ADR
+str $0 [ADR]
 
 mult_start:
 
 	# r = r+a
-	lod 3 RA
-	lod 0 RB
+	lod $3 ADR
+	lod [ADR] RA
+	lod $0 ADR
+	lod [ADR] RB
 	add RA RB
-	str ACR 3
+	lod $3 ADR
+	str ACR [ADR]
 
 	# i++
-	lod 2 RA
+	lod $2 ADR
+	lod [ADR] RA
 	inc RA
-	str ACR 2
+	str ACR [ADR]
 
-	#i-b
-	lod 2 RA
-	lod 1 RB
+	# i-b
+	lod [ADR] RA
+	lod $1 ADR
+	lod [ADR] RB
 	sub RA RB
 
 	jmpn mult_start
 
-lod 3 RA
+lod $3 ADR
+lod [ADR] RA
 hlt

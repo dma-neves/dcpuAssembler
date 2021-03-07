@@ -16,21 +16,33 @@ instValue = {
     'orRARB' : 12,
     'orRARC': 13,
 
-    'lodadrRA' : 14,
-    'strRAadr' : 15,
-    'lodadrRB' : 16,
-    'strRBadr' : 17,
-    'lodadrRC' : 18,
-    'strRBadr' : 19,
-    'lodACRRA' : 20,
-    'strACRadr' : 21,
-    'lod$XRA' : 22,
+    'lod$XRA' : 14,
+    'lod$XRB' : 15,
+    'lod$XRC' : 16,
+    'lod$XADR' : 17,
 
-    'jmpadr' : 23,
-    'jmpzadr' : 24,
-    'jmpnadr' : 25,
-    'jmpoadr' : 26,
-    'hlt' : 27
+    'str$X[ADR]' : 18,
+    'lod[X]ADR' : 19,
+
+    'lod[ADR]RA' : 20,
+    'strRA[ADR]' : 21,
+    'lod[ADR]RB' : 22,
+    'strRB[ADR]' : 23,
+    'lod[ADR]RC' : 24,
+    'strRC[ADR]' : 25,
+
+    'lodACRRA' : 26,
+    'lodACRADR' : 27,
+    'strACR[ADR]' : 28,
+
+    'strIC[ADR]' : 29,
+
+    'jmpADR' : 30,
+    'jmpX' : 31,
+    'jmpzX' : 32,
+    'jmpnX' : 33,
+    'jmpoX' : 34,
+    'hlt' : 35
     }
 
 def intTo8bitStr(n):
@@ -84,19 +96,21 @@ else:
                 
                 for t in tokens:
                     
-                    token_wd = t.replace('$', '') # Token without dollar
+                    token_ws = t.replace('$', '').replace('[', '').replace(']', '') # Token without symbols
 
                     # If token is a numeric valuel, attribute it to the instruction data
-                    if token_wd.isnumeric():
-                        data = int(token_wd)
+                    if token_ws.isnumeric():
+                        data = int(token_ws)
                         if '$' in t:
                             instExp += '$X'
+                        elif '[' in t:
+                            instExp += '[X]'
                         else:
-                            instExp += 'adr'
+                            instExp += 'X'
                     # If token is a label, attribute the correct memory address to the instruction data
                     elif t in labels:
                         data = labels[t]
-                        instExp += 'adr'
+                        instExp += 'X'
                     else:
                         instExp += t
 
