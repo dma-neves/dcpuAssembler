@@ -1,50 +1,18 @@
 import sys
+from isa import *
 
-instValue = {
-    'addRARB' : 0,
-    'addRARC' : 1,
-    'addRA$X' : 2,
-    'subRARB' : 3,
-    'subRARC' : 4,
-    'subRA$X' : 5,
-    'incRA' : 6,
-    'decRA' : 7,
-    'negRA' : 8,
-    'notRA' : 9,
-    'andRARB' : 10,
-    'andRARC' : 11,
-    'orRARB' : 12,
-    'orRARC': 13,
+# Get the value/number of a given register or -1 if the token is invalid
+def getRegisterVal(token):
 
-    'lod$XRA' : 14,
-    'lod$XRB' : 15,
-    'lod$XRC' : 16,
-    'lod$XADR' : 17,
+    if token == 'sp':
+        return 8
 
-    'str$X[ADR]' : 18,
-    'lod[X]ADR' : 19,
+    elif len(token) == 2 and token[0] == 'r':
+        return ord(token[1]) - ord('a')
 
-    'lod[ADR]RA' : 20,
-    'strRA[ADR]' : 21,
-    'lod[ADR]RB' : 22,
-    'strRB[ADR]' : 23,
-    'lod[ADR]RC' : 24,
-    'strRC[ADR]' : 25,
+    return -1
 
-    'lodACRRA' : 26,
-    'lodACRADR' : 27,
-    'strACR[ADR]' : 28,
-
-    'strIC[ADR]' : 29,
-
-    'jmpADR' : 30,
-    'jmpX' : 31,
-    'jmpzX' : 32,
-    'jmpnX' : 33,
-    'jmpoX' : 34,
-    'hlt' : 35
-    }
-
+# Get a string with the binary representation of n
 def intTo8bitStr(n):
 
     bitStr = "{0:b}".format(n)
@@ -52,84 +20,183 @@ def intTo8bitStr(n):
 
     return '0'*missingZeros + bitStr
 
-def printError(lc):
+def printError(line):
 
-    print("syntax error: line " + str(lc))
+    print("syntax error: " + str(line))
     quit()
 
-args = sys.argv
+# Replace macros by the corresponding instructions
+def resolveMacros(lines):
+    
+    newLines = []
 
-if len(args) != 2:
-    print("usage: python3 assembler.py codeFile.s")
+    for line in lines:
+        tokens = line.lower().split()
 
-else:
-    codeFile = args[1]
-    print("assembling: " + codeFile)
+        if tokens[0] == 'psh':
+            val = tokens[1]
+            newLines.append('lod SP ADR')
+            newLines.append('str ' + val + ' [ADR]')
+            newLines.append('inc SP')
+            newLines.append('lod ACR SP')
 
-    lc = 0 # line counter
-    ic = 0 # instruction counter
+        elif tokens[0] == 'pop':
+
+            if len(tokens) == 1:
+                newLines.append('dec SP')
+                newLines.append('lod ACR SP')
+
+            else:
+                reg = tokens[1]
+                newLines.append('lod SP ADR')
+                newLines.append('lod [ADR] ' + reg)
+                newLines.append('dec SP')
+                newLines.append('lod ACR SP')
+
+        elif tokens[0] == 'lsr':
+            pos = tokens[1]
+            reg = tokens[2]
+            newLines.append('ssp ' + pos)
+            newLines.append('lod ACR ADR')
+            newLines.append('lod [ADR] ' + reg)
+
+        elif tokens[0] == 'srs':
+            reg = tokens[1]
+            pos = tokens[2]
+            newLines.append('ssp ' + pos)
+            newLines.append('lod ACR ADR')
+            newLines.append('str ' + reg + ' [ADR]')
+
+        elif tokens[0] == 'lod' and tokens[1][0] == '$' and tokens[2][0] == 'r':
+            val = tokens[1]
+            reg = tokens[2]
+            newLines.append('lod $254 ADR')
+            newLines.append('str ' + val + ' [ADR]')
+            newLines.append('lod [ADR] ' + reg)
+
+        else:
+            newLines.append(line)
+
+    return newLines
+
+# Remove empty lines and comments
+def removeUnnecessaryLines(lines):
+
+    newLines = []
+
+    for line in lines:
+        if line.strip() and not ('#' in line or ';' in line):
+            newLines.append(line.strip())
+
+    return newLines
+
+# Return all the executable instructions and a map with the memory addresses of each label
+def resolveLabels(lines):
+
+    ic = 0
     labels = {}
     instructions = []
 
-    f = open(codeFile,'r')
-    
-    for line in f:
-        lc += 1
-        tokens = line.split()
+    for line in lines:
+        tokens = line.lower().split()
 
-        # Check if the line isnt empty or a comment line
-        if len(tokens) != 0 and tokens[0][0] != "#" and tokens[0][0] != ";":
-
-            # Check if line is label for jump instruction
-            if tokens[-1][-1] == ':':
-                if len(tokens) == 1:
-                    label = tokens[0][:-1]
-                    # Memory value for the jump instruction using this label will be the current instruction - 1
-                    # sinse after executing the jump, the IC is incremented
-                    labels[label] = ic-1
-                else:
-                    printError(lc)
+        # Check if line is label for jump instruction
+        if tokens[-1][-1] == ':':
+            if len(tokens) == 1:
+                label = tokens[0][:-1]
+                # Memory value for the jump instruction using this label will be the current instruction - 1
+                # sinse after executing the jump, the IC is incremented
+                labels[label] = ic-1
             else:
-                ic += 2
-                instExp = "" # Instruction expression
-                data = 0
-                
-                for t in tokens:
-                    
-                    token_ws = t.replace('$', '').replace('[', '').replace(']', '') # Token without symbols
+                printError(line)
+        else:
+            instructions.append(line)
+            ic += 2
 
-                    # If token is a numeric valuel, attribute it to the instruction data
-                    if token_ws.isnumeric():
-                        data = int(token_ws)
-                        if '$' in t:
-                            instExp += '$X'
-                        elif '[' in t:
-                            instExp += '[X]'
-                        else:
-                            instExp += 'X'
-                    # If token is a label, attribute the correct memory address to the instruction data
-                    elif t in labels:
-                        data = labels[t]
-                        instExp += 'X'
+    return instructions, labels
+
+def main():
+    args = sys.argv
+
+    if len(args) != 3:
+        print("usage: python3 assembler.py codeFile.s outputDataType")
+        print("outputDataType can be b (binary) or s (string)")
+
+    else:
+        codeFile = args[1]
+        dataType = args[2]
+
+        print("assembling: " + codeFile)
+
+        binaryInstructions = []
+        f = open(codeFile, 'r')
+        lines = resolveMacros( removeUnnecessaryLines(f) )
+        instructions, labels = resolveLabels(lines)
+        
+        for instruction in instructions:
+            tokens = instruction.lower().split()
+            instExp = "" # Instruction expression
+            data = 0
+            
+            for t in tokens:
+
+                reg = getRegisterVal(t)
+
+                # If token is a register, attribute the register value to the instruction data
+                if reg != -1:
+
+                    if "rx" in instExp:
+                        #print('rx: ' + str(data) + ' ry: ' + str(reg) + ' final: ' + str(data + (reg << 4)))
+                        data = data + (reg << 4)
+                        instExp += "ry"
+
                     else:
-                        instExp += t
+                        data = reg
+                        instExp += "rx"
+                
+                # If token is a numeric valuel, attribute it to the instruction data
+                elif '$' in t:
+                    data = int(t.replace('$', ''))
+                    instExp += '$v'
 
-                # Check for invalid instruction
-                if not (instExp in instValue):
-                    printError(lc)
+                # If token is a label, attribute the correct memory address to the instruction data
+                elif t in labels:
+                    data = labels[t]
+                    instExp += 'x'
 
-                inst = instValue[instExp]
+                else:
+                    instExp += t
+
+            # Check for invalid instruction
+            if not (instExp in instValue):
+                print(instruction)
+                printError(instExp)
+
+            inst = instValue[instExp]
+
+            if dataType == 's':
                 b = intTo8bitStr(data) + intTo8bitStr(inst)
-                # Add instruction to the list
-                instructions.append(b)
+                binaryInstructions.append(b)
+                # print(instExp + " " + str(data))
 
-    f.close()
-    # Write instructions to the binary file
-    f = open(codeFile.replace(".s", ".binary"), 'w')
-    for i in instructions:
-        f.write(i)
-        f.write("\n")
+            else:
+                # TODO
+                quit()
 
-    f.close()
+        f.close()
 
-    print("successful assembly")
+        # Write instructions to the binary file
+        if dataType == 's':
+            f = open(codeFile.replace(".s", ".strBinary"), 'w')
+            for i in binaryInstructions:
+                f.write(i)
+                f.write("\n")
+
+        else:
+            # TODO
+            quit()
+
+        f.close()
+        print("successful assembly")
+
+main()

@@ -1,79 +1,37 @@
-# n! program                                               
+# n! program
 
 # n = 5
-lod $0 ADR
-str $5 [ADR]
+psh $5
 
-# r (result)
-lod $1 ADR
-str $1 [ADR]
+# fac = 1
+lod $1 RA
 
-# cnt (counter)
-lod $2 ADR
-str $2 [ADR]
+# i = 2
+lod $2 RB
 
-factorial_start:
+factorial_loop_start:
 
-    lod $2 ADR
-    lod [ADR] RC
+    # mult = 0
+    lod $0 RC
 
-    # r = r*cnt
+    # j = 0
+    lod $0 RD
 
-    # i (multiplication counter)
-    lod $3 ADR
-    str $0 [ADR]
+    mult_loop_start:
 
-    # mr (multiplication result)
-    lod $4 ADR
-    str $0 [ADR]
+        add RC RA
+        lod ACR RC
 
-    mult_start:
+        # if j<i goto mult_loop_start
+        sub RB RD
+        jmpn mult_loop_start
 
-        # mr = mr+r
-        lod $4 ADR
-        lod [ADR] RA
-        lod $1 ADR
-        lod [ADR] RB
-        add RA RB
-        lod $4 ADR
-        str ACR [ADR]
+    psh RC
+    pop RA
 
-        # i++
-        lod $3 ADR
-        lod [ADR] RA
-        inc RA
-        lod $3 ADR
-        str ACR [ADR]
+    # if i<n goto factorial_loop_start
+    lsr $1 RE
+    sub RE RB
+    jmpn factorial_loop_start
 
-        # if(i - cnt < 0) goto mult_start
-        lod $3 ADR
-        lod [ADR] RA
-        lod $2 ADR
-        lod [ADR] RB
-        sub RA RB
-        jmpn mult_start
-
-    lod $4 ADR
-    lod [ADR] RA
-    lod $1 ADR
-    str RA [ADR]
-
-    # cnt++
-    lod $2 ADR
-    lod [ADR] RA
-    inc RA
-    lod $2 ADR
-    str ACR [ADR]
-
-    # if(cnt - n <= 0) goto factorial_start
-    lod $2 ADR
-    lod [ADR] RA
-    lod $0 ADR
-    lod [ADR] RB
-    sub RA RB
-    jmpn factorial_start
-    jmpz factorial_start
-
-lod $1 ADR
-lod [ADR] RA
 hlt
