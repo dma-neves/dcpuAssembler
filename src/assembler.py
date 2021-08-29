@@ -5,7 +5,7 @@ from isa import *
 def getRegisterVal(token):
 
     if token == 'sp':
-        return 8
+        return 7
 
     elif len(token) == 2 and token[0] == 'r':
         return ord(token[1]) - ord('a')
@@ -48,10 +48,10 @@ def resolveMacros(lines):
 
             else:
                 reg = tokens[1]
-                newLines.append('lod SP ADR')
-                newLines.append('lod [ADR] ' + reg)
                 newLines.append('dec SP')
                 newLines.append('lod ACR SP')
+                newLines.append('lod SP ADR')
+                newLines.append('lod [ADR] ' + reg)
 
         elif tokens[0] == 'lsr':
             pos = tokens[1]
@@ -146,7 +146,6 @@ def main():
                 if reg != -1:
 
                     if "rx" in instExp:
-                        #print('rx: ' + str(data) + ' ry: ' + str(reg) + ' final: ' + str(data + (reg << 4)))
                         data = data + (reg << 4)
                         instExp += "ry"
 
@@ -180,21 +179,21 @@ def main():
                 # print(instExp + " " + str(data))
 
             else:
-                # TODO
-                quit()
+                binaryInstructions.append(inst)
+                binaryInstructions.append(data)
 
         f.close()
 
         # Write instructions to the binary file
         if dataType == 's':
-            f = open(codeFile.replace(".s", ".strBinary"), 'w')
+            f = open(codeFile.replace(".s", ".strbinary"), 'w')
             for i in binaryInstructions:
                 f.write(i)
                 f.write("\n")
 
         else:
-            # TODO
-            quit()
+            f = open(codeFile.replace(".s", ".binary"), 'w+b')
+            f.write(bytearray(binaryInstructions))
 
         f.close()
         print("successful assembly")

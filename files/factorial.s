@@ -22,16 +22,25 @@ factorial_loop_start:
         add RC RA
         lod ACR RC
 
+        # j++
+        inc RD
+        lod ACR RD
+
         # if j<i goto mult_loop_start
-        sub RB RD
+        sub RD RB
         jmpn mult_loop_start
 
     psh RC
     pop RA
 
-    # if i<n goto factorial_loop_start
+    # i++
+    inc RB
+    lod ACR RB
+
+    # if i<=n goto factorial_loop_start
     lsr $1 RE
-    sub RE RB
+    sub RB RE
     jmpn factorial_loop_start
+    jmpz factorial_loop_start
 
 hlt
