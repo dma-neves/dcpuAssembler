@@ -8,7 +8,6 @@
 **Syntax**
   - [ISA](https://github.com/dma-neves/8bcpu/blob/main/other/ISA/ISA.txt)
   - Instead of directly using the memory locations for jump instructions the assembler allows the usage of labels.
-  - the addition of comments using the "#" or ';' characters.
   - The "#" and ';' characters can be used for comments. Comments cannot be placed on the same line as a instruction.
   - To reduce the repetition of code, six macros were added to the assembler:
 
