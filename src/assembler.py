@@ -31,7 +31,7 @@ def resolveMacros(lines):
     newLines = []
 
     for line in lines:
-        tokens = line.lower().split()
+        tokens = line.lower().split(' ')
 
         if tokens[0] == 'psh':
             val = tokens[1]
@@ -67,7 +67,7 @@ def resolveMacros(lines):
             newLines.append('lod ACR ADR')
             newLines.append('str ' + reg + ' [ADR]')
 
-        elif tokens[0] == 'lod' and tokens[1][0] == '$' and tokens[2][0] == 'r':
+        elif tokens[0] == 'lod' and tokens[1][0] == '$' and (tokens[2][0] == 'r' or tokens[2] == "sp"):
             val = tokens[1]
             reg = tokens[2]
             newLines.append('lod $254 ADR')
@@ -98,12 +98,12 @@ def resolveLabels(lines):
     instructions = []
 
     for line in lines:
-        tokens = line.lower().split()
+        tokens = line.lower().split(' ')
 
         # Check if line is label for jump instruction
         if tokens[-1][-1] == ':':
             if len(tokens) == 1:
-                label = tokens[0][:-1]
+                label = tokens[0][:-1].lower()
                 # Memory value for the jump instruction using this label will be the current instruction - 1
                 # sinse after executing the jump, the IC is incremented
                 labels[label] = ic-1
@@ -134,7 +134,7 @@ def main():
         instructions, labels = resolveLabels(lines)
         
         for instruction in instructions:
-            tokens = instruction.lower().split()
+            tokens = instruction.lower().split(' ')
             instExp = "" # Instruction expression
             data = 0
             
@@ -161,7 +161,7 @@ def main():
                 # If token is a label, attribute the correct memory address to the instruction data
                 elif t in labels:
                     data = labels[t]
-                    instExp += 'x'
+                    instExp += ('x' if 'jmp' in instruction.lower() else '$v')
 
                 else:
                     instExp += t

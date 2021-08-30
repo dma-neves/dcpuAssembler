@@ -22,7 +22,8 @@ instValue = {
 	'jmpzx' : 20,
 	'jmpnx' : 21,
 	'jmpox' : 22,
-	'hlt' : 23
+	'hlt' : 23,
+    'break' : 24
 }
 
 """
