@@ -54,7 +54,7 @@ avg:
 		dec RF
 		jmpn div_loop_end
 
-		; else div++ goto div_loop_start
+		; else div++ and goto div_loop_start
 		lsr $2 RF
 		inc RF
 		lod ACR RF
