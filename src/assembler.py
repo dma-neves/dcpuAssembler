@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 from isa import *
 
@@ -70,7 +72,7 @@ def resolveMacros(lines):
         elif tokens[0] == 'lod' and tokens[1][0] == '$' and (tokens[2][0] == 'r' or tokens[2] == "sp"):
             val = tokens[1]
             reg = tokens[2]
-            newLines.append('lod $254 ADR')
+            newLines.append('lod $62 ADR')
             newLines.append('str ' + val + ' [ADR]')
             newLines.append('lod [ADR] ' + reg)
 
@@ -174,8 +176,8 @@ def main():
             inst = instValue[instExp]
 
             if dataType == 's':
-                b = intTo8bitStr(data) + intTo8bitStr(inst)
-                binaryInstructions.append(b)
+                binaryInstructions.append(intTo8bitStr(inst))
+                binaryInstructions.append(intTo8bitStr(data))
                 # print(instExp + " " + str(data))
 
             else:

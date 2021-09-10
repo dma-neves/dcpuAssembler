@@ -14,7 +14,7 @@
 
   ```
   lod $V RX:
-    lod $254 ADR
+    lod $62 ADR
     str $V [ADR]
     lod [ADR] RX
 
