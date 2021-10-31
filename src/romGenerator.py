@@ -19,7 +19,7 @@ def intTo8bitStr(n):
 args = sys.argv
 
 if len(args) != 2:
-    print("usage: python3 assembler.py binaryFile.binary")
+    print("usage: python3 assembler.py stringBinaryFile.strbinary")
 
 else:
 

@@ -120,13 +120,18 @@ def resolveLabels(lines):
 def main():
     args = sys.argv
 
-    if len(args) != 3:
+    if len(args) < 3:
         print("usage: python3 assembler.py codeFile.s outputDataType")
         print("outputDataType can be b (binary) or s (string)")
 
     else:
         codeFile = args[1]
         dataType = args[2]
+        printInstructions = False
+
+        if len(args) == 4 and args[3] == "-p":
+            printInstructions = True
+
 
         print("assembling: " + codeFile)
 
@@ -135,6 +140,7 @@ def main():
         lines = resolveMacros( removeUnnecessaryLines(f) )
         instructions, labels = resolveLabels(lines)
         
+        counter = 0
         for instruction in instructions:
             tokens = instruction.lower().split(' ')
             instExp = "" # Instruction expression
@@ -183,6 +189,10 @@ def main():
             else:
                 binaryInstructions.append(inst)
                 binaryInstructions.append(data)
+
+            if printInstructions:
+                print(instruction + " (inst: " + str(inst) + " data: " + str(data) + " address: " + str(counter) + ")")
+                counter += 2
 
         f.close()
 
