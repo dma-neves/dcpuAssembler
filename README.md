@@ -45,6 +45,5 @@
     str RX [ADR]
   ```
   
-**Example**
-  `main` function calls `avg( [5,2,9], 3 )` to calculate the array's average.
+**Example:** `main` function calls `avg( [5,2,9], 3 )` to calculate the array's average.
   ![alt text](https://github.com/dma-neves/Assembler/blob/main/other/code.png)
