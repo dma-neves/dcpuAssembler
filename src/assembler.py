@@ -148,6 +148,9 @@ def main():
             
             for t in tokens:
 
+                if t == ";" or t == "#":
+                    break
+
                 reg = getRegisterVal(t)
 
                 # If token is a register, attribute the register value to the instruction data

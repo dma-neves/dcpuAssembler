@@ -52,7 +52,7 @@ else:
     print("rom generated successfully")
     """
 
-    romf = open("../files/ROM256.vhd", 'w+')
+    romf = open("files/ROM256.vhd", 'w+')
     binf = open(args[1])
 
     romf.write(start)
