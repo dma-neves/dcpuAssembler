@@ -9,10 +9,10 @@ def romLine(i, inst):
     return "I(" + a + " downto " + b + ") <= \"" + inst + "\";\n"
 
 # Get a string with the binary representation of n
-def intTo8bitStr(n):
+def intTo16bitStr(n):
 
     bitStr = "{0:b}".format(n)
-    missingZeros = 8 - len(bitStr)
+    missingZeros = 16 - len(bitStr)
 
     return '0'*missingZeros + bitStr
 
@@ -23,14 +23,14 @@ if len(args) != 2:
 
 else:
 
-    romf = open("files/ROM256.vhd", 'w+')
+    romf = open("files/ROM.vhd", 'w+')
     binf = open(args[1])
 
     romf.write(start)
 
     c = 0
     for inst in binf:
-        romf.write('            when \"' + intTo8bitStr(c) + '\" => DO <= \"' + inst[:-1] + '\";\n')
+        romf.write('            when \"' + intTo16bitStr(c) + '\" => DO <= \"' + inst[:-1] + '\";\n')
         c += 1
 
     romf.write(end)

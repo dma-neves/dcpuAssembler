@@ -15,10 +15,10 @@ def getRegisterVal(token):
     return -1
 
 # Get a string with the binary representation of n
-def intTo8bitStr(n):
+def intTo16bitStr(n):
 
     bitStr = "{0:b}".format(n)
-    missingZeros = 8 - len(bitStr)
+    missingZeros = 16 - len(bitStr)
 
     return '0'*missingZeros + bitStr
 
@@ -157,7 +157,7 @@ def main():
                 if reg != -1:
 
                     if "rx" in instExp:
-                        data = data + (reg << 4)
+                        data = data + (reg << 8)
                         instExp += "ry"
 
                     else:
@@ -185,8 +185,8 @@ def main():
             inst = instValue[instExp]
 
             if dataType == 's':
-                binaryInstructions.append(intTo8bitStr(inst))
-                binaryInstructions.append(intTo8bitStr(data))
+                binaryInstructions.append(intTo16bitStr(inst))
+                binaryInstructions.append(intTo16bitStr(data))
                 # print(instExp + " " + str(data))
 
             else:

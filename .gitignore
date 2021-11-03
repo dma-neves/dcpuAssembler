@@ -2,4 +2,4 @@ src/__pycache__/
 *.strbinary
 *.binary
 src/sys
-
+*.vhd

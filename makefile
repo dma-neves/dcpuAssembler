@@ -1,6 +1,6 @@
 PROGRAM = average
 
-ROM_DIR = /home/david/Desktop/David/Programming/HDL/projects/8bcpu/src/Memory/ROM256.vhd
+ROM_DIR = /home/david/Desktop/David/Programming/HDL/projects/dcpu/src/Memory/ROM.vhd
 LOCAL_ROM = files/ROM256.vhd
 
 all: $(ROM_DIR)
@@ -12,4 +12,4 @@ $(LOCAL_ROM): files/$(PROGRAM).strbinary src/romGenerator.py
 	python3 src/romGenerator.py $<
 
 $(ROM_DIR): $(LOCAL_ROM)
-	cp -f files/ROM256.vhd $(ROM_DIR)
+	cp -f files/ROM.vhd $(ROM_DIR)
