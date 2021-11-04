@@ -2,12 +2,6 @@ import shutil
 import sys
 from vhdlCode import *
 
-def romLine(i, inst):
-
-    a = str(i)
-    b = str(i-15)
-    return "I(" + a + " downto " + b + ") <= \"" + inst + "\";\n"
-
 # Get a string with the binary representation of n
 def intTo16bitStr(n):
 

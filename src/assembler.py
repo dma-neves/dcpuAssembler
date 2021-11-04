@@ -140,7 +140,7 @@ def main():
         lines = resolveMacros( removeUnnecessaryLines(f) )
         instructions, labels = resolveLabels(lines)
         
-        counter = 0
+        adrCounter = 0
         for instruction in instructions:
             tokens = instruction.lower().split(' ')
             instExp = "" # Instruction expression
@@ -148,6 +148,7 @@ def main():
             
             for t in tokens:
 
+                # If token is a comment skip to next instruction
                 if t == ";" or t == "#":
                     break
 
@@ -156,6 +157,9 @@ def main():
                 # If token is a register, attribute the register value to the instruction data
                 if reg != -1:
 
+                    # If a register (rx) has already been defined in the instruction expression, 
+                    # define register ry and add the register's index to the instruciton data 
+                    # shifted 8 bits to the left. (bits 0 to 7 save index 'x', bits 8 to 15 save index 'y'
                     if "rx" in instExp:
                         data = data + (reg << 8)
                         instExp += "ry"
@@ -184,22 +188,26 @@ def main():
 
             inst = instValue[instExp]
 
+            # If data type is string, generate the binary in string format
             if dataType == 's':
                 binaryInstructions.append(intTo16bitStr(inst))
                 binaryInstructions.append(intTo16bitStr(data))
                 # print(instExp + " " + str(data))
 
+             # Else, generate the raw binary data
             else:
                 binaryInstructions.append(inst)
                 binaryInstructions.append(data)
 
+            # Print instructions for debugging
             if printInstructions:
-                print(instruction + " (inst: " + str(inst) + " data: " + str(data) + " address: " + str(counter) + ")")
-                counter += 2
+                print(instruction + " (inst: " + str(inst) + " data: " + str(data) + " address: " + str(adrCounter) + ")")
+                adrCounter += 2
 
         f.close()
 
-        # Write instructions to the binary file
+        # Write the binary instructions to the file
+
         if dataType == 's':
             f = open(codeFile.replace(".s", ".strbinary"), 'w')
             for i in binaryInstructions:
